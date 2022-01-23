@@ -304,3 +304,9 @@ pip-selfcheck.json
 
 # Ignore json files
 *.json
+/rockyou.txt
+/test.py
+/txt_to_json.py
+/argument.py
+/.jsbeautifyrc
+*.idea
