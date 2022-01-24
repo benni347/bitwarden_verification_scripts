@@ -5,65 +5,76 @@ This is a script to verify the accounts from bitwarden to check if the URI still
 
 import json
 import sys
+import scripts.bitwarden as bw
+import argparse
+import pprint
 
 
-class main():
-    def __init__(self):
+class BitwardenScripts():
+    def __init__(self, params):
         # set self.data to empty string
-        self.data = ""
+        self.data = None
+        self.params = None
+        self.version = None
 
-    def load_data(self, file_name: str):
-        with open(file_name, 'r') as f:
-            self.data = json.load(f)
+        self.set_data("")
+        # Store parameters
+        self.set_params(params)
+        self.set_version("1.0")
+
+    def get_version(self):
+        """This method will return the version"""
+        return self.version
+
+    def set_version(self, version):
+        """This method will set the version"""
+        self.version = version
+
+    def get_params(self):
+        """This method will return the parameters"""
+        return self.params
+
+    def get_data(self):
+        """This method will return the data"""
         return self.data
 
-    def action(self, action):
-        """This method will ask the user what action to perform"""
-        # format the input to lowercase and remove spaces and remove the '-' and '--'
-        # cut it to only first letter
-        action = action.lower().replace(' ', '').replace(
-            '-', '').replace('--', '')[0]
-        if action == "l":
-            print("load a file")
-        elif action == "c":
-            self.check_uri()
-        elif action == "p":
-            print("Check for weak passwords")
-        elif action == "L":
-            print("Login to your account")
-        else:
-            print("This is the help menu")
-            print("-h For this menu")
-            print("-l Load a file")
-            print("-c Check the uris")
-            print("-p Check for weak passwords")
-            print("-L To login to your account")
+    def set_data(self, data):
+        """This method will set the data"""
+        self.data = data
 
-    def check_uri(self):
-        for ci in self.data['items']:
-            try:
-                for uri in ci['login']['uris']:
-                    try:
-                        uri = uri['uri']
-                        print(f"uri → {uri}")
-                    except:
-                        print("uri not found")
-            except:
-                print("uris not found")
+    def set_params(self, params):
+        """This method will set the parameters"""
+        self.params = params
 
+    def parse_params(self):
+        """This method will parse the parameters"""
+        parser = argparse.ArgumentParser(
+            description="This script will check the uri's from bitwarden")
+        parser.add_argument("-f", "--file", help="Bitwarden export file to use", required=True)
+        parser.add_argument("-c", "--check", action="store_true",
+                            help="Check the uri's")
+        parser.add_argument("-p", "--passwords", action="store_true",
+                            help="Check the weak passwords")
+        parser.add_argument("-V", "--version", action="version", version="0.0.1", help="Show version",
+                            default=False)
+        # self.params = parser.parse_args(self.get_params())
+        self.params = parser.parse_args(self.get_params())
+
+    def run(self):
+        """This method will perform the actions the user has specified"""
+
+        bw_checks = bw.Bitwarden(self.get_params().file)
+
+        if self.get_params().check:
+            bw_checks.check_all_uris()
+            bw_checks.write_to_file()
+        if self.get_params().passwords:
+            bw_checks.check_weak_passwords()
+            bw_checks.write_weak_pwd_to_file()
+        if self.get_params().version:
+            print(self.get_version())
 
 if __name__ == "__main__":
-    # ask the user for the file
-    # file = input("Enter the file name: ")
-    # append .json to file
-    # file = file + ".json"
-    # print(f"file → {file}")
-    # pass the file to load_data
-    # data = main().load_data(file)
-    # call the main class
-    main = main()
-    if len(sys.argv) > 1:
-        main.action(sys.argv[1])
-    else:
-        main.action("--help")
-    # pass action_terminal to action
+    bwscripts = BitwardenScripts(sys.argv[1:])
+    bwscripts.parse_params()
+    bwscripts.run()

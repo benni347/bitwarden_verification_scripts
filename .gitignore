@@ -275,7 +275,6 @@ cython_debug/
 [Ll]ib
 [Ll]ib64
 [Ll]ocal
-[Ss]cripts
 pyvenv.cfg
 pip-selfcheck.json
 
@@ -305,7 +304,7 @@ pip-selfcheck.json
 # Ignore json files
 *.json
 /rockyou.txt
-/test.py
+/strength.py
 /txt_to_json.py
 /argument.py
 /.jsbeautifyrc

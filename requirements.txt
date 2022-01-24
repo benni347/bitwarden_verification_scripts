@@ -1,1 +1,1 @@
-ta-bitwarden-cli
+zxcvbn
