@@ -41,11 +41,6 @@ func main() {
 			Value: log.InfoLevel.String(),
 			Usage: "Log level",
 		}),
-		altsrc.NewStringFlag(&cli.StringFlag{
-			Name:  "pongpath",
-			Value: "/pong",
-			Usage: "pong Path",
-		}),
 		altsrc.NewBoolFlag(&cli.BoolFlag{
 			Name:  "profile",
 			Value: false,
